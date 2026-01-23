@@ -1,0 +1,38 @@
+#FROM icr.io/appcafe/ibm-semeru-runtimes:open-17-jre-ubi9-minimal
+FROM icr.io/appcafe/ibm-semeru-runtimes:open-17-jdk-ubi
+#FROM openj9:j17-parkproto
+#FROM openj9:J17-20251129
+#JRE at /opt/java/openjdk
+
+ARG POPULATE_SCC=false
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
+USER root
+#RUN yum install -y nc procps-ng net-tools
+# Set up permissions for user `1001`
+RUN mkdir /deployments \
+    && chown 1001 /deployments \
+    && chmod "g+rwX" /deployments \
+    && chown 1001:root /deployments
+#    && echo "securerandom.source=file:/dev/urandom" > /opt/java/openjdk/jre/lib/security/java.security
+
+COPY --chown=1001 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=1001 target/quarkus-app/*.jar /deployments/
+COPY --chown=1001 target/quarkus-app/app/ /deployments/app/
+COPY --chown=1001 target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=1001 populate_scc.sh /populate_scc.sh
+
+# Use shell logic to conditionally run a command
+RUN if [ "$POPULATE_SCC" = "true" ]; then ./populate_scc.sh; fi
+
+#SCC="-Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc"
+ENV OPENJ9_JAVA_OPTIONS="-XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly"
+
+
+EXPOSE 9090
+USER 1001
+ENV QUARKUS_DATASOURCE_JDBC_URL="jdbc:postgresql://localhost:5432/rest-crud"
+# postgress address can be changed on the command line with "-Dquarkus.datasource.jdbc.url=jdbc:postgresql://9.46.116.36:5432/rest-crud"
+#ENTRYPOINT ["/work/scriptToRunInsideDocker.sh"]
+CMD ["java", "-Dhttp.keepalive=true", "-Dhttp.maxConnections=100", "-Dquarkus.http.port=9090", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", "-jar",  "/deployments/quarkus-run.jar"]
+
