@@ -1,1 +1,2 @@
-docker build -f Dockerfile_wrk -t wrk . 
+docker build --network=host -f Dockerfile_wrk -t wrk .
+

@@ -2,7 +2,7 @@
 # Results appear on /output in the container
 # Must specify the hostname for the restCrud application (or localhost will be assumed)
 
-FROM adoptopenjdk/openjdk8-openj9:jre
+FROM eclipse-temurin:17.0.16_8-jre
 
 ENV JMETER_VERSION=5.5
 
@@ -25,7 +25,7 @@ ENV JMETER_HOME=/jmeter/apache-jmeter-$JMETER_VERSION
 ENV PATH=$JMETER_HOME/bin:$PATH
 
 # Set JVM options
-ENV JVM_ARGS="-Xms1g -Xmx1g -Xtune:virtualized"
+ENV JVM_ARGS="-Xms1g -Xmx1g"
 
 # We should set summariser.interval=6 in bin/jmeter.properties
 RUN echo 'summariser.interval=6' >> $JMETER_HOME/bin/jmeter.properties
