@@ -1,0 +1,19 @@
+# Start with a base ubuntu layer
+FROM ubuntu:24.04
+
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    wrk
+
+# Set some environment variables that can be used in the wrk command
+ENV THREADS=4
+ENV DURATION=10
+ENV CONNECTIONS=4
+ENV SUT_IP=localhost
+ENV SUT_PORT=9090
+
+COPY run_wrk.sh /
+RUN chmod +x /run_wrk.sh
+# Run the wrk command
+ENTRYPOINT ["/run_wrk.sh"]
+
