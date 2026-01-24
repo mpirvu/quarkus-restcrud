@@ -53,7 +53,7 @@ cd JMeterContext
 ./build_jmeter.sh
 ```
 
-## G. (Optional) Try OpenJ9 restCrud container with wrk
+## G. Testing OpenJ9 restCrud container with wrk
 ```
 cd RunInContainer
 ./startPostgres.sh
@@ -63,6 +63,25 @@ Wait a few seconds for Quarkus to start and then apply load
 ```
 ./applyLoadContainer.sh
 ```
+
+## H. Building the OpenJ9 restCrud container with CRIU/InstantON
+```
+cd RestCrud_CRIU_BuildContext
+./buildJ9-criu.sh
+```
+
+## I. Testing OpenJ9-CRIU restCrud container
+```
+cd RunInContainer_CRIU
+./startPostgres.sh
+./startQuarkus.sh
+```
+In another window execute
+```
+./applyLoadContainer.sh
+./stopQuarkus.sh
+```
+
 
 
 

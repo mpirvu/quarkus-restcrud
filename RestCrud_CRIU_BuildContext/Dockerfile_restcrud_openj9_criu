@@ -1,0 +1,33 @@
+#FROM openj9_restcrud_nopopulatescc:J17-20251020
+FROM openj9_restcrud:J17
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+USER root
+
+RUN dnf install -y \
+    # CRIU dependencies
+        iptables-libs iptables jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
+    # Semeru dependencies
+        tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip wget tar \
+    && dnf update -y && dnf clean all;
+
+COPY startQuarkus.sh /deployments/
+COPY pidplus.sh /deployments/pidplus.sh
+COPY restore.sh /deployments/restore.sh
+
+RUN chmod +x /deployments/restore.sh
+RUN chmod +x /deployments/pidplus.sh
+
+RUN chown -R 1001 /deployments/
+RUN chmod -R 777 /deployments/
+
+RUN curl -Lo /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64
+
+RUN chmod +x /usr/local/bin/dumb-init
+
+ENV GLIBC_TUNABLES=glibc.pthread.rseq=0
+
+WORKDIR /deployments
+
+CMD ["bash", "startQuarkus.sh"]
