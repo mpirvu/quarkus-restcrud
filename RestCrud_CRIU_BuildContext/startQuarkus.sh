@@ -8,6 +8,12 @@ else
     echo "start checkpoint run"
     for i in {1..500}; do ./pidplus.sh; done
     mkdir cr
+    # To enable JITServer one must add -XX:+UseJITServer to the Java command line. Assumes JITServer is on the same network as the application.
+    # Check if USE_JITSERVER is set to true and add the option via _JAVA_OPTIONS
+    if [ "$USE_JITSERVER" = "true" ]; then
+        echo "Enabling JIT Server"
+        export _JAVA_OPTIONS="${_JAVA_OPTIONS} -XX:+UseJITServer"
+    fi
     $JAVA_HOME/bin/java -Dquarkus.thread-pool.max-threads=8 -Dquarkus.thread-pool.core-threads=8 -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/rest-crud -Dhttp.keepalive=true -Dhttp.maxConnections=100 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Xmx128m -Dquarkus.http.host=0.0.0.0 -XX:CRaCCheckpointTo=cr -Dquarkus.http.port=9090 -Dopenj9.internal.criu.unprivilegedMode=true $JAVA_OPTS -jar /deployments/quarkus-run.jar 1>out 2>err </dev/null &
     echo "sleeping for 10 seconds"
     sleep 10
