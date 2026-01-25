@@ -69,6 +69,10 @@ Wait a few seconds for Quarkus to start and then apply load
 cd RestCrud_CRIU_BuildContext
 ./buildJ9-criu.sh
 ```
+Note: if you want to allow the JVM to use JITServer (Semeru Cloud Compiler) functionality, use:
+```
+./buildJ9-criu.sh --jitserver
+```
 
 ## I. Testing OpenJ9-CRIU restCrud container
 ```
@@ -81,6 +85,19 @@ In another window execute
 ./applyLoadContainer.sh
 ./stopQuarkus.sh
 ```
+Note: if you want to allow the JVM to use JITServer (Semeru Cloud Compiler) functionality,
+start the JITServer container prior to starting the Quarkus container.
+```
+./startJITServer.sh
+```
+This will use the image `openj9_restcrud:J17` created at step D as a jitserver.
+Then, start the app with:
+```
+./startQuarkus-jitserver.sh
+```
+After the Quarkus container is started, you can check that it connected to JITServer by
+executing: `docker logs jitserver`.
+
 
 
 

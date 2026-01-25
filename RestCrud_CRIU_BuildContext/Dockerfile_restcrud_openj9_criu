@@ -1,6 +1,8 @@
 #FROM openj9_restcrud_nopopulatescc:J17-20251020
 FROM openj9_restcrud:J17
 
+ARG USE_JITSERVER=false
+ENV USE_JITSERVER=${USE_JITSERVER}
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 USER root
