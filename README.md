@@ -47,24 +47,49 @@ cd WrkContext
 ./build_wrk.sh
 ```
 
-## F. Building the JMeter container for load
+## F. Building the jmeter container for load
 ```
 cd JMeterContext
 ./build_jmeter.sh
 ```
 
-## G. Testing OpenJ9 restCrud container with wrk
+## G. Testing restCrud native image with jmeter or wrk
+```
+cd RunNativeImage
+./startPostgres.sh
+./startQuarkus.sh
+```
+In another window execute:
+```
+./applyLoadContainer.sh [--wrk]
+```
+
+## H. Testing OpenJ9 restCrud container with jmeter or wrk
 ```
 cd RunInContainer
 ./startPostgres.sh
 ./startQuarkus.sh
 ```
-Wait a few seconds for Quarkus to start and then apply load
+Wait a few seconds for Quarkus to start and then apply load in another window:
 ```
-./applyLoadContainer.sh
+./applyLoadContainer.sh [--wrk]
 ```
 
-## H. Building the OpenJ9 restCrud container with CRIU/InstantON
+Note: if you want to allow the JVM to use JITServer (Semeru Cloud Compiler) functionality,
+start the JITServer container prior to starting the Quarkus container:
+```
+./startJITServer.sh
+```
+This will use the image `openj9_restcrud:J17` created at step D as a jitserver.
+Then, start the app with:
+```
+./startQuarkus-jitserver.sh
+```
+After the Quarkus container is started, you can check that it connected to JITServer by
+executing: `docker logs jitserver`.
+
+
+## I. Building the OpenJ9 restCrud container with CRIU (InstantON) support
 ```
 cd RestCrud_CRIU_BuildContext
 ./buildJ9-criu.sh
@@ -74,7 +99,7 @@ Note: if you want to allow the JVM to use JITServer (Semeru Cloud Compiler) func
 ./buildJ9-criu.sh --jitserver
 ```
 
-## I. Testing OpenJ9-CRIU restCrud container
+## J. Testing OpenJ9-CRIU restCrud container
 ```
 cd RunInContainer_CRIU
 ./startPostgres.sh
@@ -82,7 +107,7 @@ cd RunInContainer_CRIU
 ```
 In another window execute
 ```
-./applyLoadContainer.sh
+./applyLoadContainer.sh [--wrk]
 ./stopQuarkus.sh
 ```
 Note: if you want to allow the JVM to use JITServer (Semeru Cloud Compiler) functionality,
@@ -98,7 +123,14 @@ Then, start the app with:
 After the Quarkus container is started, you can check that it connected to JITServer by
 executing: `docker logs jitserver`.
 
+## K. Automation though python script
+The script `runQuarkusCrudContainer.py` can run several iterations of the test.
+```
+python3 runQuarkusCrudContainer.py numIterations
+```
 
+The script can be customized by change the variables at the top of the script.
+The most important ones are the image to run and the arguments to provide to the JVM in that image.
 
 
 

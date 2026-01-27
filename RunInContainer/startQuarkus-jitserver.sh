@@ -1,0 +1,1 @@
+docker run --rm -it -e QUARKUS_DATASOURCE_JDBC_URL="jdbc:postgresql://localhost:5432/rest-crud" -e _JAVA_OPTIONS="-XX:+UseJITServer" -m=256m --cpuset-cpus=1 --net=host --name=quarkus openj9_restcrud:J17
