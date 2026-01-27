@@ -123,7 +123,7 @@ Then, start the app with:
 After the Quarkus container is started, you can check that it connected to JITServer by
 executing: `docker logs jitserver`.
 
-## K. Automation though python script
+## K. Automation through python script
 The script `runQuarkusCrudContainer.py` can run several iterations of the test.
 ```
 python3 runQuarkusCrudContainer.py numIterations
